@@ -1,7 +1,12 @@
 import pandas as pd
 import numpy as np
 from collections import OrderedDict
-from lab_math import gain, create_tree
+from lab_math import gain
+import seaborn as sns
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+plt.figure(figsize = (25,25))
 
 
 # функция, которая возвращает первый лист
@@ -20,6 +25,23 @@ def clear_kgf_in_data_frame(data_frame):
 	new_data_frame["КГФ"] = clear_kgf
 	return new_data_frame
 
+# удаляем значения
+def identify_missing(data_frame, treshold):
+	missing_ser = data_frame.isnull().sum() / data_frame.shape[0]
+	missing = pd.DataFrame(missing_ser)
+	missing = missing.sort_values(0, ascending = False)
+	missing_columns = pd.DataFrame(missing_ser[missing_ser>treshold]).reset_index().rename(columns = {'index' : 'feat', 0 : '% Nones'})
+	data_frame_drop = data_frame.drop(missing_columns["feat"], axis = 1)
+	return data_frame_drop
+def identify_collinear(data_frame, treshold):
+	correct_matrix = data_frame.corr()
+	lower = correct_matrix.where(np.tril(np.ones(correct_matrix.shape), k = -1).astype(np.bool))
+	drop_columns = [column for column in lower.columns if any(lower[column].abs() >treshold)]
+	new_data_frame = data_frame.drop(drop_columns, axis = 1)
+	cmap = sns.cubehelix_palette(as_cmap = True, light=.9)
+	krg = sns.heatmap(lower, annot = True, cmap=cmap)
+	plt.show()
+	return new_data_frame
 
 # удаляем столбцы с единственным значением
 def delete_column_with_single_unique_value(data_frame):
@@ -41,9 +63,13 @@ if __name__ == '__main__':
 	print("data frame before delete columns with single value")
 	print(data_frame)
 	new_data_frame = delete_column_with_single_unique_value(data_frame)
-	data_frame = delete_column_with_single_unique_value(data_frame)
 	print("data frame after delete columns with single value")
 	print(new_data_frame)
+
+	# откоментировать блок для heatmap
+	#new_data_frame = identify_missing(new_data_frame, 0.4)
+	#new_data_frame = identify_collinear(new_data_frame, 0.98)
+	# конец блока
 	
 	g_total = new_data_frame["G_total"]
 	kgf = new_data_frame["КГФ"]
@@ -87,12 +113,14 @@ if __name__ == '__main__':
 		values[i] = g
 	print("gain:")
 	print(values)
+	plt.bar(values.keys(), values.values())
+	plt.show()
 
 
+	# откоментировать для heatmap
+	#data_column = data_frame["дд.мм.гггг"]
+	#replace = data_frame.drop(["дд.мм.гггг"], axis = 1)
+	#for i in data_frame.columns.values:
+	#	gistogram(data_frame, i)
+	#конец блока
 
-	# задание номер два. Тут мы берем data_frame, а не new_data_frame
-	table = {}
-	for i, k in data_frame.items():
-		table[i] = list(k.values)
-
-	a = create_tree(table, "КГФ")

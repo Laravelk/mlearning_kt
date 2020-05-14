@@ -52,9 +52,9 @@ def gain(table, sign, name_rescol):
 	gain = entropy(table, name_rescol) - specific_entropy(table, sign, name_rescol)
 	return gain
 
-# создает дерево важности признаков
-def create_tree(table, result):
-	column = max([(k, gain(table, k, result)) for k in table.keys() if k != result], key=lambda x: x[1])[0]
-	print(column)
-	tree = []
-	return tree
+# для второго задания
+def check_study_result(array):
+	for i in array:
+		if i != array[0]:
+			return False
+		return True;  
