@@ -80,7 +80,7 @@ if __name__ == '__main__':
 	print("kgf")
 	print(kgf)
 
-	new_data_frame = new_data_frame.drop(["G_total", "КГФ"], axis=1)
+	#new_data_frame = new_data_frame.drop(["G_total", "КГФ"], axis=1)
 	tmp_buffer = []
 
 	print("Формируем столбец Kgf_total")
@@ -111,10 +111,12 @@ if __name__ == '__main__':
 	for i in new_data_frame.columns.values:
 		g = gain(table, i, "Kgf_Total")
 		values[i] = g
-	print("gain:")
-	print(values)
-	plt.bar(values.keys(), values.values())
-	plt.show()
+	df = new_data_frame[['Рлин','Рзаб.1','Тзаб','Дебит гааз','Нэф','Рпл. Тек (Карноухов)','Pсб.1', 'Дебит кон нестабильный', 'G_total', 'КГФ']]
+	df.head(2)
+	df.to_excel('1.xlsx')
+	#print(values)
+	#plt.bar(values.keys(), values.values())
+	#plt.show()
 
 
 	# откоментировать для heatmap
